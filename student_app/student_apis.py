@@ -54,5 +54,20 @@ def new_student_registration(id:int,s_name,s_age,s_class):
 
     return stu_obj.add_student(new_student_details)
 
+# find student by student_id
 
-    
+@app.get("/get_student_by_id")
+def get_student(student_id:int):
+    stu_record=stu_obj.get_student_by_id(student_id)
+    return stu_record
+
+@app.delete("/delete_student_by_id")
+def delete_student(student_id:int):
+    deleted_record=stu_obj.delete_by_id(student_id)
+    return deleted_record
+
+
+@app.put("/update_student")
+def update_stu_details(student_id,s_name):
+    updated_stu=stu_obj.update_student_record(student_id,s_name)
+    return updated_stu

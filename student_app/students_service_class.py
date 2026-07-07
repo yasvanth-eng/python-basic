@@ -21,3 +21,32 @@ class StudentService:
         with open(self.file_name, "w") as file:
             json.dump(students, file, indent=4)
         return {"message": "Student Added Successfully"}
+    
+    def get_student_by_id(self,student_id):
+        student=self.get_all_student()
+        for s in student:
+            if s["student id"] == student_id:
+                return {"student record":s}
+        return {"message":"record not found"}
+    
+    
+    def delete_by_id(self,student_id):
+        student=self.get_all_student()
+        for s in student:
+            if s["student id"] == student_id:
+                student.remove(s)
+                with open(self.file_name, "w") as file:
+                    json.dump(student, file, indent=4)
+                return{"message":"record got deleted"}
+        return {"message":"record not found"}
+
+    def update_student_record(self,student_id,s_name):
+        student=self.get_all_student()
+        for s in student:
+            if s["student id"] == student_id:
+                s["student name"] == s_name
+                print(s)
+                with open(self.file_name, "w") as file:
+                    json.dump(student, file, indent=4)
+                return {"message":"record got updated sucessfully"}
+        return {"message":"record not found"}
