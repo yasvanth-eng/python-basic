@@ -1,14 +1,8 @@
 [
     {
-        "student id": 1,
-        "student name": "abc",
-        "student age": "12",
-        "student class": "9"
-    },
-    {
-        "student id": 1001,
-        "student name": "abcd",
-        "student age": "12",
-        "student class": "9"
+        "student_id": 123,
+        "student_name": "yash",
+        "age": "14",
+        "student_class": "8"
     }
 ]

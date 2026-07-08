@@ -10,10 +10,21 @@
  
 from fastapi import FastAPI, HTTPException
 from students_service_class import StudentService
+import json
+from fastapi.middleware.cors import CORSMiddleware
  
 app = FastAPI(title="Student CRUD API")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 stu_obj=StudentService()
+
+login_info = "./login_details.json"
 
 @app.get("/health_check")
 def health_check():
@@ -24,7 +35,7 @@ def health_check():
 
 #get all student api
 
-@app.get("/get_all_students")
+@app.get("/students")
 def students():
     try:
         total_student=stu_obj.get_all_student()
@@ -42,32 +53,85 @@ def students():
 
 #new student api
 
-@app.post("/new_student_registration")
-def new_student_registration(id:int,s_name,s_age,s_class):
-    new_student_details={
-        "student id":id,
-        "student name":s_name,
-        "student age":s_age,
-        "student class":s_class
+@app.post("/students")
+def new_student_registration(id:int,s_name:str,s_age:int,s_class:int):
+    try:
+        new_student_details={
+        "student_id":id,
+        "student_name":s_name,
+        "age":s_age,
+        "student_class":s_class
 
     }
-
-    return stu_obj.add_student(new_student_details)
+        print("new student details",new_student_details)
+        return stu_obj.add_student(new_student_details)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Application failed: {str(e)}")
 
 # find student by student_id
 
-@app.get("/get_student_by_id")
+@app.get("/students/{student_id}")
 def get_student(student_id:int):
-    stu_record=stu_obj.get_student_by_id(student_id)
-    return stu_record
+    try:
+        stu_record=stu_obj.get_student_by_id(student_id)
+        return stu_record
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Application failed: {str(e)}")
 
-@app.delete("/delete_student_by_id")
+
+@app.delete("/students/{student_id}")
 def delete_student(student_id:int):
-    deleted_record=stu_obj.delete_by_id(student_id)
-    return deleted_record
+    try:
+        deleted_record=stu_obj.delete_by_id(student_id)
+        return deleted_record
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Application failed: {str(e)}")
 
 
-@app.put("/update_student")
+@app.put("/students/{student_id}") 
 def update_stu_details(student_id,s_name):
-    updated_stu=stu_obj.update_student_record(student_id,s_name)
-    return updated_stu
+    try:
+        updated_stu=stu_obj.update_student_record(student_id,s_name)
+        return updated_stu
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Application failed: {str(e)}")
+    
+
+@app.post("/admin/login")
+def admin_login(username:str,password:str):
+    
+    with open(login_info, "r") as f:
+        login_details = json.load(f)
+    if username == login_details["admin"]["username"] and password == login_details["admin"]["password"]:
+        return {"message": "Login successful,adbg"}
+    else:
+        return {"message": "Invalid username or password"}
+
+
+@app.post("/student/student_login_register")
+def student_login_register(username: str, password: str,re_enter_password: str):
+    with open(login_info, "r") as f:
+        login_details = json.load(f)
+ 
+    # Check if the student already exists
+    for student in login_details["student_login"]:
+        if student["username"] == username:
+            return {"message": "Student already registered"}
+    if password != re_enter_password:
+        return {"message": "Passwords do not match"}
+    # Register the new student
+    login_details["student_login"].append({"username": username, "password": password})
+    with open(login_info, "w") as f:
+        json.dump(login_details, f,indent=4)
+ 
+    return {"message": "Student registered successfully"}
+ 
+@app.post("/student/login")
+def student_login(username: str, password: str):
+    with open(login_info, "r") as f:
+        login_details = json.load(f)
+    for student in login_details["student_login"]:
+        if student["username"] == username and student["password"] == password:
+            return {"message": "Login successful"}
+    return {"message": "Invalid username or password"}
+ 
