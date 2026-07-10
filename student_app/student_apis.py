@@ -39,14 +39,14 @@ def health_check():
 def students():
     try:
         total_student=stu_obj.get_all_student()
+        print(total_student)
         if len(total_student)==0:
-            return {
-                "messages":"no student registered yet"
-            }
+            return []
+           
         else:
-            return {
-                "messages":total_student
-            }
+           return total_student
+        
+            
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Application failed: {str(e)}")
 
@@ -54,19 +54,19 @@ def students():
 #new student api
 
 @app.post("/students")
-def new_student_registration(id:int,s_name:str,s_age:int,s_class:int):
-    try:
+def new_student_registration(student_id:int,student_name:str,age:int,student_class:int):
+    #try:
         new_student_details={
-        "student_id":id,
-        "student_name":s_name,
-        "age":s_age,
-        "student_class":s_class
+        "student_id":student_id,
+        "student_name":student_name,
+        "age":age,
+        "student_class":student_class
 
     }
         print("new student details",new_student_details)
         return stu_obj.add_student(new_student_details)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Application failed: {str(e)}")
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail=f"Application failed: {str(e)}")
 
 # find student by student_id
 
@@ -89,9 +89,9 @@ def delete_student(student_id:int):
 
 
 @app.put("/students/{student_id}") 
-def update_stu_details(student_id,s_name):
+def update_stu_details(student_id:int,student_name:str,age:int,student_class:int):
     try:
-        updated_stu=stu_obj.update_student_record(student_id,s_name)
+        updated_stu=stu_obj.update_student_record(student_id,student_name,age,student_class)
         return updated_stu
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Application failed: {str(e)}")
