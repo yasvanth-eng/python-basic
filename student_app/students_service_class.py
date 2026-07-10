@@ -41,12 +41,14 @@ class StudentService:
                 return {"message": "record got deleted"}
         return {"message": "record not found"}
 
-    def update_student_record(self, student_id, s_name):
+    def update_student_record(self, student_id,student_name,age,student_class):
 
         student = self.get_all_student()
         for s in student:
             if s["student_id"] == student_id:
-                s["student_name"] == s_name
+                s["student_name"] = student_name
+                s["age"] = age
+                s["student_class"] = student_class
                 print(s)
                 with open(self.file_name, "w") as file:
                     json.dump(student, file, indent=4)

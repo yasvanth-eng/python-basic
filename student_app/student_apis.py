@@ -103,7 +103,7 @@ def admin_login(username:str,password:str):
     with open(login_info, "r") as f:
         login_details = json.load(f)
     if username == login_details["admin"]["username"] and password == login_details["admin"]["password"]:
-        return {"message": "Login successful,adbg"}
+        return {"message": "Login successful"}
     else:
         return {"message": "Invalid username or password"}
 
